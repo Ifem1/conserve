@@ -1,0 +1,16 @@
+{
+  "name": "ifem1-conserve",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Contract-only GenLayer semantic obligation conservation primitive on stable StudioNet 61999",
+  "engines": {"node": ">=20"},
+  "scripts": {
+    "check:network": "node scripts/network-preflight.mjs",
+    "verify:cli": "node scripts/verify-cli.mjs",
+    "verify:deployed-source": "node scripts/verify-source-parity.mjs",
+    "deploy:main": "npm run verify:cli && npm run check:network && genlayer deploy --contract contracts/conserve.py --rpc https://studio.genlayer.com/api",
+    "lint:python": "python -m py_compile contracts/conserve.py contracts/conservation_gate.py",
+    "test:logic": "python -m pytest -q tests/test_contract_logic.py"
+  },
+  "devDependencies": {"genlayer": "0.39.1"}
+}

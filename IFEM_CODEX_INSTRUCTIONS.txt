@@ -1,0 +1,50 @@
+CONSERVE — INSTRUCTIONS FOR IFEM'S CODEX AGENT
+
+I have unzipped the Conserve ZIP myself and opened THIS LOCAL FOLDER in Codex. Work directly inside this folder; DO NOT clone another repository or replace these source files with a template.
+
+GOAL
+Complete and independently verify the delivered standalone GenLayer Intelligent Contract primitive, publish it to my GitHub repository https://github.com/Ifem1/conserve AFTER I create that repository, and deploy/review-proof it on the STABLE hosted StudioNet only. The core contract and deterministic tests already exist. Your job is rigorous completion and real deployment, not brainstorming, redesigning, or adding a frontend.
+
+NON-NEGOTIABLE NETWORK/TOOLCHAIN
+- Chain ID is exactly 61999 (0xF22F).
+- Network name: studionet (STABLE), NOT studio-dev, studio-next or chain 61997.
+- RPC: https://studio.genlayer.com/api
+- Explorer: https://explorer-studio.genlayer.com
+- Use repository-local genlayer CLI 0.39.1. My system/global CLI might be 0.40.0rc2; do not invoke it.
+- Target hosted Studionet GenVM v0.2.12 compatibility; confirm it rather than assuming whatever latest docs imply.
+- No frontend, no backend, no wallet adapters, no Snaps/WalletConnect and no custom EVM payment flow.
+
+REPOSITORY SAFETY
+1. Read README.md, AGENTS.md, docs/INVARIANTS.md, docs/SECURITY.md, docs/STUDIONET_61999.md, and docs/LIVE_PROBE.md.
+2. Keep the exact source as the baseline; inspect and fix real defects, not cosmetic rewrites. Preserve source hashes and provide a diff for all changes.
+3. Do not silently copy/fork the implementation or terminology from any other submission. Conserve stands on its own.
+4. The GitHub repo Ifem1/conserve may not exist yet. Do not push before it exists. If it already exists, inspect its default branch and existing contents carefully; never force-push or discard history. Otherwise initialize Git in THIS UNZIPPED FOLDER, add only origin https://github.com/Ifem1/conserve.git, commit, and push to the repository's designated default branch using my authorized GitHub credentials. Do not use ometere123 as owner.
+
+LOCAL VALIDATION AND SECURE PINNING
+5. Run `python -m py_compile contracts/conserve.py contracts/conservation_gate.py` and `python -m pytest -v tests/test_contract_logic.py`; note these are mocked contract-logic tests, not GenVM Direct Mode.
+6. Install Node deps locally with `npm install --no-audit --no-fund`; verify `node_modules/genlayer/package.json` says exactly `0.39.1` and run `npm run verify:cli`. Commit the real generated package-lock.json (cannot be truthfully generated in the originating container because npm network access timed out). On subsequent runs use `npm ci`. Never fall back to global CLI.
+7. Install/identify a GenVM linter compatible with STABLE 61999. Run all available lint/check/schema validations of both Python contracts. If `genvm-lint` syntax differs, inspect help; preserve proof and version. Do not declare an unrun check passed.
+8. Build and execute real GenLayer Direct Mode tests for: malformed inputs; atomicity of parent/child; omission/weakening; created rights; validator re-observation and malicious leader mismatch; exclusive pair overlap; required assignee consent and withdrawal; roots-spent replay; timestamp expiry; failed finalization; and consumer ABI compatibility. Add CI for Direct Mode only if it actually runs in your environment. Include at least two adverse negative cases in actual multi-validator consensus, not only mocks.
+9. Independently audit the invariants, including uncertainty fail-closed, time handling from gl.message.raw.datetime, actual TreeMap/dataclass mutation semantics in GenVM, audit hash correctness, source-root consumption atomicity, class kind mismatch, and whether pairwise exclusive checks are comprehensive. Repair discovered source or runtime faults; add regression tests. Do not claim a real-world legal assignment has been authenticated: input source is self-declared.
+
+STABLE STUDIONET LIVE WORK
+10. Run `npm run check:network` and also verify actual CLI network info using `./node_modules/.bin/genlayer network set studionet` and `./node_modules/.bin/genlayer network info`. Independently check `eth_chainId == 0xF22F`. If mismatch or unverified, STOP. Never deploy on 61997.
+11. Deploy only `contracts/conserve.py` as main contract, with `npm run deploy:main` after proofs are green. Capture deployment transaction ID and REAL contract address. WAIT for FINALIZED and execution SUCCESS. Verify deployed source bytes/source hash match the repository. Do not misreport ACCEPTED as FINALIZED.
+12. Exercise the LIVE_PROBE.md matrix: a full successful parent+child conservation + recipient approval + final hash; omitted parent; expanded child right; wrong source hash; wrong signer; approval withdrawal; overlapping exclusive-right children; a correctly disjoint case; expired case; second-finalization reuse of identical source root. Save transaction IDs, validator agreement evidence, receipts and statuses.
+13. Deploy optional `contracts/conservation_gate.py` only when the main contract has a real finalized case. Construct it with the Conserve address, owner operator, exact case ID, exact FINAL certificate hash and frozen action hash. Prove a real typed IC-to-IC view gating a one-time consumption, wrong-hash rejection, unauthorized caller rejection and replay rejection. This is a contract-only integration fixture, not a frontend/product.
+14. If stable StudioNet limitations or consensus failures block a live proof, record the precise blocker and STOP claiming that scenario succeeded. Do not switch to Studio Dev/Next to get a green screenshot.
+
+DOCUMENTATION, CI, PUSH
+15. Update README.md, docs/REVIEW_PACKET.md and docs/LIVE_PROBE.md with ONLY real observed results. Add final source SHA-256, commit SHA, green CI links, actual deployed address/tx/explorer links, and candid unsupported tests. Do not fabricate score/reviewer acceptance.
+16. Run an independent hostile audit for authority spoofing, duplicate rights/obligation certification, semantic omission, hidden carveouts, unsupported child terms, ambiguous overlaps and malicious-leader consensus acceptance. Fix severe issues before deploying the final build.
+17. Make GitHub Actions pass. Ensure the pushed default branch has the exact deployed source and no secrets. If required, redeploy after source fixes and update all references to the final address.
+18. Send me a final factual report with: repository and commit, local CLI pin and target chain, commands actually run, test counts, GenVM/Direct Mode evidence, StudioNet FINALIZED txs and SUCCESS receipt evidence, consumer contract proof, remaining limitations, and the concise Intelligent Contract submission description.
+
+STRICT DEFINITION OF DONE
+- Main contract fully validated in GenVM and tested adversarially.
+- Main source verified and deployed ON CHAIN 61999, not 61997.
+- At least one positive and multiple negative live proof cases.
+- Full source parity (repo == deployed bytes) confirmed.
+- Correct `Ifem1/conserve` repo with green CI.
+- No frontend or backend.
+- Honest explicit blocker if any of the above fails.

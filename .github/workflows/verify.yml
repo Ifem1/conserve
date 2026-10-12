@@ -1,0 +1,28 @@
+name: Verify contract-only Conserve
+on:
+  push:
+  pull_request:
+jobs:
+  logic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned validation requirements
+        run: python -m pip install -r requirements-dev.txt
+      - name: Compile the GenLayer contract sources
+        run: python -m py_compile contracts/conserve.py contracts/conservation_gate.py
+      - name: Validate against stable hosted GenVM
+        run: |
+          export GENVM_VERSION=v0.2.12
+          genvm-lint check contracts/conserve.py --json
+          genvm-lint check contracts/conservation_gate.py --json
+      - name: Mocked and GenLayer Direct Mode tests
+        run: python -m pytest -v
+      - name: Validate fixed target configuration
+        run: |
+          grep -q '"genlayer": "0.39.1"' package.json
+          grep -q 'CONSERVE_CHAIN_ID=61999' .env.example
+          grep -q 'CONSERVE_RPC=https://studio.genlayer.com/api' .env.example
