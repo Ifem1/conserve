@@ -1,6 +1,6 @@
 # Live StudioNet proof matrix — observed 2026-10-12
 
-Mocked logic tests, GenLayer Direct Mode tests, and the live multi-validator matrix have run. Direct Mode complements but does not replace the live evidence below. GitHub authentication as Ifem1 is verified; publication and CI are in progress.
+Mocked logic tests, GenLayer Direct Mode tests, and the live multi-validator matrix have run. Direct Mode complements but does not replace the live evidence below. The implementation was pushed to `Ifem1/conserve` on `main` at commit `80bef1f944912331bc2b426b2926de7b48dfe1ec`; GitHub Actions run [38310472813](https://github.com/Ifem1/conserve/actions/runs/38310472813) passed.
 
 ## Observed deployment and live results
 
@@ -14,7 +14,7 @@ Mocked logic tests, GenLayer Direct Mode tests, and the live multi-validator mat
 - The consumer’s valid consume called the live typed Conserve view and succeeded; on-chain `get_status` returns `consumed: true`. Wrong action, unauthorized caller, and replay were rejected.
 - Initial malformed proposal probe `0xb18969faa715152ebecb46d5e84cab6d3d7883f6816986ad0c4498044b6ccc61` reached `FINALIZED` with leader execution `ERROR`: CLI 0.39.1 parsed JSON arrays as array calldata rather than JSON text strings. No case was created. A typed SDK call was then used for all subsequent live tests.
 - A valid recipient assent was once attempted with a mistyped source hash missing its last character; it correctly failed (`0x83ef60659598cdbe653cd17fd4049d871b973342413f67ab2c15220bbd64503e`). The exact hash was then read from chain and assent succeeded in `0x11b01b7c839b9982c46a4eb1797f43a5b7f399c22fa55c7843208b52fa6f8221`.
-- GitHub publication is in progress: the target repository's default branch is `main`, it has no existing branch refs, and authentication as Ifem1 is verified. The initial commit, non-force push, and CI run are pending.
+- GitHub Actions run [38310472813](https://github.com/Ifem1/conserve/actions/runs/38310472813) on the initial source commit passed all steps: hosted GenVM lint, Python compilation, fixed target checks, and 35 mocked plus Direct Mode tests.
 
 ## Transaction evidence
 

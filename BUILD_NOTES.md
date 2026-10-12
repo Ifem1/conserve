@@ -18,6 +18,6 @@
 
 ## Publication status
 
-The target repository is `Ifem1/conserve`, its default branch is `main`, and it had no existing branch refs at publication time. GitHub authentication as Ifem1 is verified. The initial commit, non-force push, and Actions CI run are in progress; update this record with their observed results before release.
+The target repository is `Ifem1/conserve`; the initial source commit `80bef1f944912331bc2b426b2926de7b48dfe1ec` is pushed to `main`. GitHub Actions run [38310472813](https://github.com/Ifem1/conserve/actions/runs/38310472813) passed hosted GenVM lint, Python compilation, target checks, and all 35 mocked and Direct Mode tests. The final documentation update is being published separately.
 
 The underlying source and signer inputs are self-declared; this contract does not authenticate real-world legal authority or source authenticity.

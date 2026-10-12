@@ -71,7 +71,7 @@ Each term must be **atomic** and `kind` is exactly `DUTY`, `PROHIBITION`, `RIGHT
 - Repository-local `genlayer@0.39.1` was installed and verified. `npm run check:network` confirmed `eth_chainId=61999` at the required RPC.
 - Main contract was redeployed from the user-provided funded throwaway signer: `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`; deployment transaction `0xa9cb64cd055eefc4b8dae5a34ea4b3e0add2857a4944270a00b9fc5b9d819553` reached `FINALIZED` with execution `SUCCESS`. Source parity was verified; SHA-256 `470bcdbb1c66f6e8ca109aab1ae3f5b1d74ee2edc55a682d7eaa92927d8b1e09`. The earlier deployment `0x59B81DC93C24339030A6e10f10eD35d81aa274F1` remains on chain and has the same verified source.
 - A live successful case finalized with exact recipient assent; a second disjoint exclusive-right case with two assignees also finalized. Live weakened/unsupported semantic, wrong signer/hash, withdrawal, overlap, expiry, and replay probes produced their expected outcomes. The optional consumer performed a successful typed IC-to-IC read and one-shot consume; wrong action, unauthorized caller, and replay were rejected.
-- **Publication in progress:** Ifem1 GitHub authentication is verified; the initial commit, push, and Actions run are pending. The observed live transaction matrix and any unsupported scenarios are recorded in [`docs/LIVE_PROBE.md`](docs/LIVE_PROBE.md).
+- **Published and verified:** The implementation was pushed to [`Ifem1/conserve`](https://github.com/Ifem1/conserve) on `main`. GitHub Actions run [38310472813](https://github.com/Ifem1/conserve/actions/runs/38310472813) passed GenVM lint, Python compilation, and all 35 tests, including Direct Mode. The live transaction matrix and unsupported scenarios are recorded in [`docs/LIVE_PROBE.md`](docs/LIVE_PROBE.md).
 
 These live transactions demonstrate contract behavior on the observed stable network; they do not authenticate self-declared real-world legal authority. See [`docs/SECURITY.md`](docs/SECURITY.md) for that boundary.
 
@@ -84,7 +84,7 @@ RPC            https://studio.genlayer.com/api
 Explorer       https://explorer-studio.genlayer.com
 Local CLI      genlayer@0.39.1 (not global 0.40.x)
 GenVM target   v0.2.12 (verify against hosted 61999 before claiming compatibility)
-GitHub target  https://github.com/Ifem1/conserve (Ifem1 authentication verified; publication in progress)
+GitHub target  https://github.com/Ifem1/conserve (main; initial source commit 80bef1f944912331bc2b426b2926de7b48dfe1ec)
 ```
 
 Install CLI **locally**, not globally: `npm install --no-audit --no-fund` then `npm run verify:cli`. A generated `package-lock.json` is included. Use `npm ci` on subsequent installs. Use `npm run check:network` to query actual `eth_chainId` before deploying. Use the package's local `npm run deploy:main` wrapper, never global `genlayer deploy`.
