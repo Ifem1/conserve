@@ -54,7 +54,7 @@ Follow [`LIVE_PROBE.md`](LIVE_PROBE.md). Record:
 - optional IC-to-IC consumer gate with one successful commit, one rejection and replay prevention;
 - real finalized transaction hash and explorer links for every claim.
 
-No account private key should be committed. The corrected V2 source-root deployment and live replay proof are documented in `docs/LIVE_PROBE.md`; update this repository record after the correction is pushed and its GitHub Actions run finishes.
+No account private key should be committed. The corrected V2 source-root deployment and live replay proof are documented in `docs/LIVE_PROBE.md`. Correction commit `bbde8c2da3e15943064ade91d1af8ea072de514f` was pushed to `main`; GitHub Actions run [38317072266](https://github.com/Ifem1/conserve/actions/runs/38317072266) passed.
 
 ## Source references
 

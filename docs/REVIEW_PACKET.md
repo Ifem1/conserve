@@ -34,7 +34,7 @@ A certificate is available only when original norms all survive, proposed norms 
 - Corrected main deployment `0x6B8aD73f19b53B1d939d6d52963c99Aa18F1E488`, deployment tx `0x83e4e1fd39ba7ec6ef6da29e50010c631a60565f745c48d8834cd034b0e862c7`, FINALIZED / execution SUCCESS with five AGREE votes. Source SHA-256 `bfb00d856cc80c54d599e2f36ffaff5f1efa3b8e9fd49f1143a289bdcbf98f65` matched deployed bytes.
 - Fresh live case 1 finalized with certificate hash `d80369388ed1708bffab2afb1800c98e300dcae5c678ceae7df2718e07dd6714`. Reordered and relabelled case 2 had the same canonical root and a different exact case hash; its fully reviewed and consented finalization was FINALIZED / ERROR and left it OPEN.
 - Optional consumer `0x98cC7Cb84A63814cb6B3f61A6a2301Adad19894d` was deployed against previous main `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`; its historical tests are not evidence against corrected main.
-- Publication and CI for this correction are pending. Full live evidence is in `docs/LIVE_PROBE.md`.
+- Correction commit `bbde8c2da3e15943064ade91d1af8ea072de514f` is published on `main`; [GitHub Actions run 38317072266](https://github.com/Ifem1/conserve/actions/runs/38317072266) passed. Full live evidence is in `docs/LIVE_PROBE.md`.
 
 The correction's local and live proof work is complete to the recorded evidence. No external reviewer acceptance is claimed.
 

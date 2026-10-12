@@ -1,6 +1,6 @@
 # Live StudioNet proof matrix — observed 2026-10-12
 
-Mocked logic tests, GenLayer Direct Mode tests, and the live multi-validator matrix have run. Direct Mode complements but does not replace the live evidence below. The implementation was pushed to `Ifem1/conserve` on `main` at commit `80bef1f944912331bc2b426b2926de7b48dfe1ec`; GitHub Actions run [38310472813](https://github.com/Ifem1/conserve/actions/runs/38310472813) passed.
+Mocked logic tests, GenLayer Direct Mode tests, and the live multi-validator matrix have run. Direct Mode complements but does not replace the live evidence below. The source-root correction was pushed to `Ifem1/conserve` on `main` at commit `bbde8c2da3e15943064ade91d1af8ea072de514f`; GitHub Actions run [38317072266](https://github.com/Ifem1/conserve/actions/runs/38317072266) passed, including hosted GenVM validation, mocked and Direct Mode tests, and fixed-target configuration checks.
 
 ## Corrected current deployment and proof
 

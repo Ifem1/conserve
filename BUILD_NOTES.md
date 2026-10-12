@@ -24,6 +24,6 @@
 
 ## Publication status
 
-Corrected source commit, push, and GitHub Actions are pending. Do not claim CI for this correction until the pushed run completes. Historical green run `38310865016` was on the prior source and is not evidence for this correction.
+Corrected source commit `bbde8c2da3e15943064ade91d1af8ea072de514f` is pushed to `Ifem1/conserve` on `main`. GitHub Actions run [38317072266](https://github.com/Ifem1/conserve/actions/runs/38317072266) completed successfully, including hosted GenVM validation, mocked and Direct Mode tests, and fixed-target configuration checks.
 
 This contract checks consistency of a creator-declared source; it does not authenticate legal authority or original-source authenticity.
