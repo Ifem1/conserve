@@ -27,7 +27,7 @@ A false rewrite such as "deliver *four* reports" or "disclosure *permitted with 
 ## Two-layer security model
 
 1. **Semantic consensus:** independent validators re-derive the full verdict and the exact supporting term indexes for each parent/child review. The validator must reject a leader who picks a different verdict or support set. This is not schema-only verification. Inputs are explicitly untrusted, and all LLM calls are inside nondeterministic blocks.
-2. **Deterministic protocol:** one-way statuses; strict cardinality and text bounds; immutable snapshots; no review retry or verdict shopping; every original parent preserved; every child grounded; all overlapping exclusive-child pairs disjoint; all assignees consented; source root not already spent; owner finalizes; expiry checked using transaction time; final hash includes case ID, source, reviews, and consents.
+2. **Deterministic protocol:** one-way statuses; strict cardinality and text bounds; immutable snapshots; no review retry or verdict shopping; every original parent preserved; every child grounded; all overlapping exclusive-child pairs disjoint; all assignees consented; order-independent source root not already spent; owner finalizes; expiry checked using transaction time; final hash includes case ID, exact case source, reviews, and consents.
 
 ## Interface
 
@@ -62,18 +62,20 @@ Each term must be **atomic** and `kind` is exactly `DUTY`, `PROHIBITION`, `RIGHT
 
 ## How the consumer actually uses it
 
-`contracts/conservation_gate.py` is a tiny *optional* contract-only example. After a live case is FINAL, deploy `ConservationGate(conserve_address, operator, case_id, final_hash, expected_action_hash)`. Its one-shot `consume(action_hash)` calls the **live Conserve contract** through a typed IC view, checks exact final hash and exact action hash, and blocks replay. There is no UI, no wallet adapter, and no backend.
+`contracts/conservation_gate.py` is a tiny *optional* contract-only example. After a live case is FINAL, deploy `ConservationGate(conserve_address, operator, case_id, final_hash, expected_action_hash)`. Its one-shot `consume(action_hash)` calls the **live Conserve contract** through a typed IC view, checks exact final hash and exact action hash, and blocks replay. Historical consumer proof used previous main `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`; it is not evidence against the corrected deployment below. There is no UI, no wallet adapter, and no backend.
+
+Source-root identity hashes a sorted **multiset** of each source term's normative kind and exact text, plus the creator and `CONSERVE_SOURCE_V2` domain. It ignores case-local term IDs and input ordering while preserving duplicate occurrences. `source_hash`, review indices, assignee assent, and final certificates remain bound to the exact immutable case, including its original source order and IDs. The guard does not deduplicate paraphrases or different creator identities.
 
 ## Proof status (observed 2026-10-12)
 
-- Python compilation passed; 35 tests passed, including 6 GenLayer Direct Mode tests and the mocked contract-logic/consumer suite. The Direct Mode environment required the Windows stdin cleanup workaround in `tests/conftest.py`.
-- Both contracts passed `genvm-lint` 0.11.0 check, semantic validation, and schema generation with target `GENVM_VERSION=v0.2.12`.
-- Repository-local `genlayer@0.39.1` was installed and verified. `npm run check:network` confirmed `eth_chainId=61999` at the required RPC.
-- Main contract was redeployed from the user-provided funded throwaway signer: `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`; deployment transaction `0xa9cb64cd055eefc4b8dae5a34ea4b3e0add2857a4944270a00b9fc5b9d819553` reached `FINALIZED` with execution `SUCCESS`. Source parity was verified; SHA-256 `470bcdbb1c66f6e8ca109aab1ae3f5b1d74ee2edc55a682d7eaa92927d8b1e09`. The earlier deployment `0x59B81DC93C24339030A6e10f10eD35d81aa274F1` remains on chain and has the same verified source.
-- A live successful case finalized with exact recipient assent; a second disjoint exclusive-right case with two assignees also finalized. Live weakened/unsupported semantic, wrong signer/hash, withdrawal, overlap, expiry, and replay probes produced their expected outcomes. The optional consumer performed a successful typed IC-to-IC read and one-shot consume; wrong action, unauthorized caller, and replay were rejected.
-- **Published and verified:** The implementation was pushed to [`Ifem1/conserve`](https://github.com/Ifem1/conserve) on `main`. GitHub Actions run [38310472813](https://github.com/Ifem1/conserve/actions/runs/38310472813) passed GenVM lint, Python compilation, and all 35 tests, including Direct Mode. The live transaction matrix and unsupported scenarios are recorded in [`docs/LIVE_PROBE.md`](docs/LIVE_PROBE.md).
+- Python compilation passed; 37 tests passed, including 7 GenLayer Direct Mode tests and the mocked contract-logic/consumer suite. The Direct Mode environment required the Windows stdin cleanup workaround in `tests/conftest.py`.
+- Both contracts passed `genvm-lint` 0.11.0 check, semantic validation, and schema generation with target `GENVM_VERSION=v0.2.12`. Repository-local `genlayer@0.39.1` and stable StudioNet chain 61999 were verified.
+- Corrected main contract: [`0x6B8aD73f19b53B1d939d6d52963c99Aa18F1E488`](https://explorer-studio.genlayer.com/address/0x6B8aD73f19b53B1d939d6d52963c99Aa18F1E488); deployment transaction [`0x83e4e1fd39ba7ec6ef6da29e50010c631a60565f745c48d8834cd034b0e862c7`](https://explorer-studio.genlayer.com/tx/0x83e4e1fd39ba7ec6ef6da29e50010c631a60565f745c48d8834cd034b0e862c7) reached `FINALIZED` / execution `SUCCESS` with five AGREE votes. Exact source parity passed; SHA-256 `bfb00d856cc80c54d599e2f36ffaff5f1efa3b8e9fd49f1143a289bdcbf98f65`.
+- On this deployment, case 1 finalized with exact recipient assent and certificate hash `d80369388ed1708bffab2afb1800c98e300dcae5c678ceae7df2718e07dd6714`. Case 2 reversed the same source norms and renamed IDs: the root hashes matched, the exact case hashes differed, and after complete reviews and assent the replay finalization reached `FINALIZED` / `ERROR`; its certificate remained OPEN.
+- Historical consumer evidence used previous main `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`, not the corrected deployment.
+- **Publication pending:** this correction is being committed to [`Ifem1/conserve`](https://github.com/Ifem1/conserve); CI for this correction has not run yet.
 
-These live transactions demonstrate contract behavior on the observed stable network; they do not authenticate self-declared real-world legal authority. See [`docs/SECURITY.md`](docs/SECURITY.md) for that boundary.
+These live transactions demonstrate behavior for the recorded inputs; they do not authenticate self-declared real-world legal authority. See [`docs/SECURITY.md`](docs/SECURITY.md) for limits.
 
 ## Stable network and pinned tooling
 
@@ -84,7 +86,7 @@ RPC            https://studio.genlayer.com/api
 Explorer       https://explorer-studio.genlayer.com
 Local CLI      genlayer@0.39.1 (not global 0.40.x)
 GenVM target   v0.2.12 (verify against hosted 61999 before claiming compatibility)
-GitHub target  https://github.com/Ifem1/conserve (main; initial source commit 80bef1f944912331bc2b426b2926de7b48dfe1ec)
+GitHub target  https://github.com/Ifem1/conserve (root-canonicalization correction pending publication)
 ```
 
 Install CLI **locally**, not globally: `npm install --no-audit --no-fund` then `npm run verify:cli`. A generated `package-lock.json` is included. Use `npm ci` on subsequent installs. Use `npm run check:network` to query actual `eth_chainId` before deploying. Use the package's local `npm run deploy:main` wrapper, never global `genlayer deploy`.
@@ -93,6 +95,6 @@ See [`docs/STUDIONET_61999.md`](docs/STUDIONET_61999.md), [`docs/LIVE_PROBE.md`]
 
 ## Scope limitations
 
-Conserve certifies the **internal preservation** of a creator-declared source set, not real-world legal authority, valid signatures on source instruments, delivery, performance, or enforceability in any jurisdiction. It has no escrow, GEN transfer, price allocation, owner override, or upgrade key. The anti-double-certification guard consumes the exact canonical `(creator, source-terms)` root on finalization; it cannot prevent someone changing source wording, using a second identity, or misrepresenting their real authority. Consumer systems must separately authenticate original source rights/mandates if their application requires it.
+Conserve certifies the **internal preservation** of a creator-declared source set, not real-world legal authority, valid signatures on source instruments, delivery, performance, or enforceability in any jurisdiction. It has no escrow, GEN transfer, price allocation, owner override, or upgrade key. The anti-double-certification guard consumes the same creator's source kind/text multiset on finalization, independent of IDs and order and preserving duplicate occurrences. It cannot prevent paraphrased sources, partial source-set extraction, use of another identity, or misrepresentation of real authority. Consumer systems must separately authenticate original source rights/mandates if their application requires it.
 
 **Licence:** MIT.

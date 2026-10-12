@@ -14,7 +14,7 @@
 2. Malicious leader fabricates a positive verdict or swaps support indices.
 3. Malicious assignee or third party attempts to assent for another address.
 4. Creator changes conditions after collecting signatures.
-5. Creator tries to certify identical source sets multiple times under two case IDs.
+5. Creator tries to certify identical source sets multiple times under two case IDs, changing term IDs or source order.
 6. Attacker embeds prompt injection inside a parent or child text.
 7. Overlapping exclusive rights are split into two apparently distinct descriptions.
 8. Replay of a certificate by a downstream consumer.
@@ -27,7 +27,8 @@
 - Each semantic review calls a leader prompt AND an independently produced validator prompt. Both outputs must agree on status and exact supporting term indexes. The result enters state **after** consensus only.
 - Every review index is immutable once committed. A proposer cannot harvest repeat verdicts from the same snapshot; opening a new version is explicit.
 - Rights must be grounded in parents; all original terms must survive across children. Exclusive-child pairs must all be disjoint.
-- Exact source-root consumption is atomic with successful finalization. Second finalization with same canonical root fails.
+- Source roots hash the creator and an order-independent multiset of normative kind plus exact source text under `CONSERVE_SOURCE_V2`; term IDs are excluded and duplicate occurrences are retained. Root consumption is atomic with successful finalization.
+- Per-case `source_hash` remains exact and includes ordered source objects, IDs, candidates, signers, purpose, title, and expiry. Reviews, assents, and final certificates remain case-bound.
 - A downstream consumer checks finalized status AND case-specific `final_hash`, not just the owner's word.
 - Expiry is read from GenLayer's transaction timestamp (`gl.message.raw.datetime` / fallback message_raw), not local system time.
 
@@ -35,7 +36,7 @@
 
 **Source authenticity.** `propose()` is a self-declared charter. A creator may falsely assert source rights. Conserve does not search for external signatures. A downstream payment/authorization application must independently authenticate that authority.
 
-**Paraphrased multi-case double allocation.** The root guard detects identical canonical source snapshots by the *same creator*. Different spelling, accounts, or partial source-set extraction can bypass this comparison. Do not describe the guard as global semantic double-spend protection.
+**Paraphrased multi-case double allocation.** The root guard detects the same creator's source kind/text multiset independent of order and IDs. Different spelling or paraphrasing, different creator identities, or partial source-set extraction can bypass this comparison. Do not describe the guard as global semantic double-spend protection.
 
 **Independent validator correctness.** Re-running semantics on independent models is stronger than format checks, not absolute logical soundness. Ambiguity returns non-eligibility; inference disagreements must not mint a positive result. Adversarial StudioNet evidence is required before claiming reliable model behaviour.
 
@@ -51,8 +52,8 @@
 - Two identical exclusive grants to separate recipients were classified `OVERLAP`; distinct Lagos/Abuja grants were classified `DISJOINT` and finalized after two distinct assents.
 - An unrelated signer and a nominated signer using a wrong source hash could not assent. A valid assent succeeded; withdrawing it left the case OPEN and finalization failed.
 - A live short-expiry case was rejected after expiry with `CONSERVE: case expired`.
-- An identical creator/source root was rejected on second finalization; a final case could not be finalized again.
-- The deployed consumer called the live `is_conserved_for` view, allowed the exact pinned action once, rejected a wrong action and unauthorized caller, and rejected replay.
+- On corrected main `0x6B8aD73f19b53B1d939d6d52963c99Aa18F1E488`, reversed source order with renamed IDs produced the same multiset root but a different immutable case hash; after full reviews and assent, replay finalization was FINALIZED / ERROR and left no certificate.
+- Historical consumer proof called the then-live `is_conserved_for` view on previous main `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`; it does not establish integration against corrected main `0x6B8aD73f19b53B1d939d6d52963c99Aa18F1E488`.
 
 See `docs/LIVE_PROBE.md` for transaction hashes and receipt outcomes. These probes establish observed contract behavior for these inputs; they do not establish universal model correctness.
 

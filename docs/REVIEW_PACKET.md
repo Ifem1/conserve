@@ -14,7 +14,7 @@ For each original atomic norm, validators independently establish whether the *e
 
 ## Deterministic reusable guarantee
 
-A certificate is available only when original norms all survive, proposed norms all have authorization basis, no two child exclusive grants overlap, every nominated assignee assents, and no identical creator/source term set has already been certified. Consumers use `is_conserved_for(case_id, final_hash)` as a strict version-pinned gate.
+A certificate is available only when original norms all survive, proposed norms all have authorization basis, no two child exclusive grants overlap, every nominated assignee assents, and the same creator has not consumed the identical source kind/text multiset (order-independent, IDs excluded, duplicate occurrences retained). Consumers use `is_conserved_for(case_id, final_hash)` as a strict version-pinned gate.
 
 ## What to attach to submission
 
@@ -28,16 +28,15 @@ A certificate is available only when original norms all survive, proposed norms 
 
 ## Current verification record
 
-- Python compilation: passed.
-- Automated tests: 35 passed, including 6 Direct Mode cases; mocked tests are identified separately in the test suite.
-- GenVM: `genvm-lint` 0.11.0 check, semantic validation and schema generation passed for both contracts targeting v0.2.12.
-- CLI/network: local CLI 0.39.1 verified; stable RPC chain ID 61999 verified.
-- Current main deployment: `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`, transaction `0xa9cb64cd055eefc4b8dae5a34ea4b3e0add2857a4944270a00b9fc5b9d819553`, FINALIZED / execution SUCCESS. Main source SHA-256 `470bcdbb1c66f6e8ca109aab1ae3f5b1d74ee2edc55a682d7eaa92927d8b1e09` matched deployed bytes. Earlier same-source deployment `0x59B81DC93C24339030A6e10f10eD35d81aa274F1` remains deployed.
-- Main live evidence includes successful case 1 finalization (hash `d5a190b4fa066ec59aee69aae3a0f7e31992e3ef1f546391ca53178efc7c4531`), weakened-parent rejection, unsupported-right rejection, overlapping-exclusive rejection, a successful two-assignee disjoint split, wrong-signer and wrong-hash rejection, withdrawal-blocked finalization, expiry rejection, duplicate-root rejection, and second-finalization rejection.
-- Optional consumer `0x98cC7Cb84A63814cb6B3f61A6a2301Adad19894d`, deployment transaction `0xf294030ca40d506e614d6ea7cd2af25adfeb34e0f18af9526f976ad6e7b7879d`, passed byte parity with local consumer SHA-256 `2f27194fdda516b68e2c3869d748821bfa25faf7ec0630604d1ca12c3adeb237`. Wrong action, unauthorized caller, successful typed cross-contract consumption, and replay rejection were observed.
-- Published to `Ifem1/conserve` on `main` at initial source commit `80bef1f944912331bc2b426b2926de7b48dfe1ec`. GitHub Actions run [38310472813](https://github.com/Ifem1/conserve/actions/runs/38310472813) passed hosted GenVM lint, compilation, target checks, and all 35 tests. The full transaction matrix is in `docs/LIVE_PROBE.md`.
+- Python compilation passed; 37 tests passed, including 7 Direct Mode cases; mocked tests are identified separately.
+- GenVM: `genvm-lint` 0.11.0 check, semantic validation, and schema generation passed for both contracts targeting v0.2.12.
+- CLI/network: repository-local CLI 0.39.1 verified; stable RPC chain ID 61999 verified.
+- Corrected main deployment `0x6B8aD73f19b53B1d939d6d52963c99Aa18F1E488`, deployment tx `0x83e4e1fd39ba7ec6ef6da29e50010c631a60565f745c48d8834cd034b0e862c7`, FINALIZED / execution SUCCESS with five AGREE votes. Source SHA-256 `bfb00d856cc80c54d599e2f36ffaff5f1efa3b8e9fd49f1143a289bdcbf98f65` matched deployed bytes.
+- Fresh live case 1 finalized with certificate hash `d80369388ed1708bffab2afb1800c98e300dcae5c678ceae7df2718e07dd6714`. Reordered and relabelled case 2 had the same canonical root and a different exact case hash; its fully reviewed and consented finalization was FINALIZED / ERROR and left it OPEN.
+- Optional consumer `0x98cC7Cb84A63814cb6B3f61A6a2301Adad19894d` was deployed against previous main `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`; its historical tests are not evidence against corrected main.
+- Publication and CI for this correction are pending. Full live evidence is in `docs/LIVE_PROBE.md`.
 
-The contract, live proof work, and initial publication are complete to the recorded evidence. CI is green; no external reviewer acceptance is claimed.
+The correction's local and live proof work is complete to the recorded evidence. No external reviewer acceptance is claimed.
 
 ## Draft short description (edit after truth-checking live proof)
 

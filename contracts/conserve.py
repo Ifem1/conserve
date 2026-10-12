@@ -367,7 +367,13 @@ class Conserve(gl.Contract):
             "signers": signers, "expires_at": deadline,
         }
         source_hash = _digest(source)
-        root_hash = _digest({"owner": _sender(), "sources": sources, "kind": "CONSERVE_SOURCE_V1"})
+        # Root identity is an order-independent multiset: source IDs are
+        # case-local labels, so neither IDs nor submitted ordering may permit
+        # the same creator to consume an equivalent source set twice. Sorting
+        # these [kind, exact text] pairs preserves duplicate occurrences.
+        root_terms = [[item["kind"], item["text"]] for item in sources]
+        root_terms.sort()
+        root_hash = _digest({"owner": _sender(), "sources": root_terms, "kind": "CONSERVE_SOURCE_V2"})
         exclusive_pairs = []
         for i in range(len(children)):
             for j in range(i + 1, len(children)):

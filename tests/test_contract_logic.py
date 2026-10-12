@@ -220,6 +220,42 @@ def test_reusing_same_root_cannot_finalise_twice(case,mod,one,exp):
         finalize(mod,case,b)
     assert not case.is_conserved(b)
 
+
+def test_root_replay_is_order_independent_and_ignores_term_ids(case,mod,exp):
+    source_a = {'id':'p1','kind':'DUTY','text':'The supplier must deliver five signed reports.'}
+    source_b = {'id':'p2','kind':'RIGHT','text':'The customer may inspect the delivered reports.'}
+    child = {'id':'c1','kind':'DUTY','text':'The replacement supplier must deliver five signed reports.','assignee':B}
+    original = [source_a, source_b]
+    replay_variants = [
+        [dict(source_b, id='renamed-b'), dict(source_a, id='renamed-a')],
+        [dict(source_a, id='renamed-a'), dict(source_b, id='renamed-b')],
+    ]
+    cases = []
+    for sources in [original, *replay_variants]:
+        cid = case.propose('Service duties','Preserve duties and rights',json.dumps(sources),
+                           json.dumps([child]),exp)
+        cases.append(cid)
+    roots = [case.get_case(cid)['root_hash'] for cid in cases]
+    assert roots[0] == roots[1] == roots[2]
+    duplicated = case.propose('Service duties','Preserve repeated duty',
+                              json.dumps([source_a,dict(source_a,id='p3')]),
+                              json.dumps([child]),exp)
+    assert case.get_case(duplicated)['root_hash'] != roots[0]
+    # Exact case hashes remain distinct because IDs and input order are still
+    # part of each immutable proposal, even though source-root identity is not.
+    source_hashes = [case.get_case(cid)['source_hash'] for cid in cases]
+    assert len(set(source_hashes)) == 3
+    for cid in cases:
+        for index in range(2):
+            case.review_parent(cid,index)
+        case.review_child(cid,0)
+        accept(mod,case,cid)
+        mod.gl.message.sender_address=A
+    assert finalize(mod,case,cases[0])
+    for cid in cases[1:]:
+        with pytest.raises(Exception,match='already consumed'):
+            finalize(mod,case,cid)
+
 def test_validator_rejects_forged_child_kind(case,mod,one,exp):
     cid=make(case,one,exp)
     mod.gl.nondet.responses['child_validator']={'verdict':'WRONG_KIND','supports':[]}

@@ -16,11 +16,11 @@ npm run lint:python
 npm run test:logic
 ```
 
-Once the real dependency tree resolves, commit the generated `package-lock.json`; use `npm ci` on future installs. Do not run `npm install -g genlayer`.
+The repository-local dependency tree and generated `package-lock.json` are committed; use `npm ci` on subsequent installs. Do not run `npm install -g genlayer`.
 
 ## 2. GenVM static/runtime proof
 
-Install a GenVM linter compatible with the **hosted 61999 GenVM v0.2.12** and run the supported `genvm-lint check` / `lint` / `validate` / `schema` commands for both sources. Verify the actual syntax shown by `genvm-lint --help`; record the version. Run real GenLayer Direct Mode tests of the nonlinear semantic cases, not only CPython mocks. This archive has not run them because these tools are unavailable in its build environment.
+Observed correction run: `genvm-lint` 0.11.0 `check` (lint plus semantic validation) and `schema` passed for both contracts with `GENVM_VERSION=v0.2.12`. CPython and GenLayer Direct Mode tests both ran; the current suite has 37 passing tests, including 7 Direct Mode cases. See `BUILD_NOTES.md` and `docs/LIVE_PROBE.md` for the corrected deployment evidence.
 
 ## 3. Always verify the effective target
 
@@ -54,7 +54,7 @@ Follow [`LIVE_PROBE.md`](LIVE_PROBE.md). Record:
 - optional IC-to-IC consumer gate with one successful commit, one rejection and replay prevention;
 - real finalized transaction hash and explorer links for every claim.
 
-No account private key should be committed. `Ifem1/conserve` needs to exist and Ifem must authorize the remote push; the ZIP has deliberately no `.git` remote.
+No account private key should be committed. The corrected V2 source-root deployment and live replay proof are documented in `docs/LIVE_PROBE.md`; update this repository record after the correction is pushed and its GitHub Actions run finishes.
 
 ## Source references
 

@@ -6,7 +6,7 @@ CONSERVE_V1 deals with **bounded self-declared normative snapshots**. Only atomi
 
 Let `P` be 1..4 immutable original atomic terms and `C` be 1..6 immutable recipient-bound candidate atomic terms.
 
-1. `SourceRoot = Keccak256(canonical(owner, P, domain_tag))` is consumed at most once on finalization per creator and exact source set. Failed/cancelled proposals do not consume it. Cross-identity or paraphrased-source reuse is not prevented.
+1. `SourceRoot = Keccak256(canonical(owner, sorted_multiset((kind, exact_text) for P), CONSERVE_SOURCE_V2))` is consumed at most once on finalization per creator and exact source kind/text multiset. IDs and submitted order do not affect the root; duplicate occurrences do. Failed/cancelled proposals do not consume it. Cross-identity or paraphrased-source reuse is not prevented.
 2. `FrozenCase = Keccak256(canonical(owner, title, purpose, P, C, recipients, expiry))` includes all material proposal fields; no edit method exists.
 3. Each `P[i]` has **one immutable reviewed verdict**. It must be `PRESERVED`, with an explicit nonempty set of supporting candidate indices, to finalize. For a parent split across several children, the independent assessment must establish joint entailment, not mere thematic similarity.
 4. Each `C[j]` has **one immutable reviewed verdict**. It must be `GROUNDED` to finalize. An expanded right, unsupported new right, wrong normative kind, compound child or uncertain child permanently blocks that case.

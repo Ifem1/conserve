@@ -2,27 +2,40 @@
 
 Mocked logic tests, GenLayer Direct Mode tests, and the live multi-validator matrix have run. Direct Mode complements but does not replace the live evidence below. The implementation was pushed to `Ifem1/conserve` on `main` at commit `80bef1f944912331bc2b426b2926de7b48dfe1ec`; GitHub Actions run [38310472813](https://github.com/Ifem1/conserve/actions/runs/38310472813) passed.
 
-## Observed deployment and live results
+## Corrected current deployment and proof
 
-- CLI: repository-local `genlayer@0.39.1`; network alias `studionet`; RPC `https://studio.genlayer.com/api`; `eth_chainId=0xF22F` (61999).
-- Current main contract: `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`; deployment transaction `0xa9cb64cd055eefc4b8dae5a34ea4b3e0add2857a4944270a00b9fc5b9d819553` reached `FINALIZED`, leader execution `SUCCESS`.
-- Earlier deployment `0x59B81DC93C24339030A6e10f10eD35d81aa274F1` (transaction `0x4e4a828ac01341d8befef89922964aa7395577b039360ca8da257d3183dcfc4a`) remains deployed with the same source.
-- Main source SHA-256: `470bcdbb1c66f6e8ca109aab1ae3f5b1d74ee2edc55a682d7eaa92927d8b1e09`; live `npm run verify:deployed-source` matched exact source bytes.
-- Successful main lifecycle: case 1, final hash `d5a190b4fa066ec59aee69aae3a0f7e31992e3ef1f546391ca53178efc7c4531`; full parent and child reviews, exact recipient assent, and finalization all executed successfully.
-- Two-assignee disjoint exclusive case 5 also finalized successfully; its parent support set included both children, both children were grounded, pair verdict was `DISJOINT`, and both assignees consented.
-- Consumer `0x98cC7Cb84A63814cb6B3f61A6a2301Adad19894d`, deployment tx `0xf294030ca40d506e614d6ea7cd2af25adfeb34e0f18af9526f976ad6e7b7879d`; deployed source exactly matches `contracts/conservation_gate.py`, SHA-256 `2f27194fdda516b68e2c3869d748821bfa25faf7ec0630604d1ca12c3adeb237`.
-- The consumer’s valid consume called the live typed Conserve view and succeeded; on-chain `get_status` returns `consumed: true`. Wrong action, unauthorized caller, and replay were rejected.
-- Initial malformed proposal probe `0xb18969faa715152ebecb46d5e84cab6d3d7883f6816986ad0c4498044b6ccc61` reached `FINALIZED` with leader execution `ERROR`: CLI 0.39.1 parsed JSON arrays as array calldata rather than JSON text strings. No case was created. A typed SDK call was then used for all subsequent live tests.
-- A valid recipient assent was once attempted with a mistyped source hash missing its last character; it correctly failed (`0x83ef60659598cdbe653cd17fd4049d871b973342413f67ab2c15220bbd64503e`). The exact hash was then read from chain and assent succeeded in `0x11b01b7c839b9982c46a4eb1797f43a5b7f399c22fa55c7843208b52fa6f8221`.
-- GitHub Actions run [38310472813](https://github.com/Ifem1/conserve/actions/runs/38310472813) on the initial source commit passed all steps: hosted GenVM lint, Python compilation, fixed target checks, and 35 mocked plus Direct Mode tests.
+- Target: stable `studionet`, chain 61999 (`0xF22F`), RPC `https://studio.genlayer.com/api`; local CLI `genlayer@0.39.1`.
+- Corrected V2 main: [`0x6B8aD73f19b53B1d939d6d52963c99Aa18F1E488`](https://explorer-studio.genlayer.com/address/0x6B8aD73f19b53B1d939d6d52963c99Aa18F1E488). Deploy tx [`0x83e4e1fd39ba7ec6ef6da29e50010c631a60565f745c48d8834cd034b0e862c7`](https://explorer-studio.genlayer.com/tx/0x83e4e1fd39ba7ec6ef6da29e50010c631a60565f745c48d8834cd034b0e862c7): FINALIZED, leader execution SUCCESS, all five validators AGREE. Source SHA-256 `bfb00d856cc80c54d599e2f36ffaff5f1efa3b8e9fd49f1143a289bdcbf98f65`; `npm run verify:deployed-source` passed exact byte parity.
+- Root identity is Keccak over owner, `CONSERVE_SOURCE_V2`, and a sorted multiset of `[kind, exact text]` pairs. Source IDs and order are excluded; repeated identical pairs remain repeated. Case `source_hash` still includes the exact ordered source objects and other case fields.
 
-## Transaction evidence
+| Fresh V2 proof | Transaction(s) | Observed result |
+|---|---|---|
+| Case 1 proposal | [`0x3387a986569a257c8924598c193b6b9866cb3cd7538e73b7b5d3c357c7e64313`](https://explorer-studio.genlayer.com/tx/0x3387a986569a257c8924598c193b6b9866cb3cd7538e73b7b5d3c357c7e64313) | FINALIZED / SUCCESS; five AGREE. Case ID 1; source hash `2de5fc7b7c986c1800efa642e3389805eac39d25e09f37802546c354cb47afa1`; root `7cfca1bc4132c5827f8a5dea0d22ceb9963025783251417c5cf920004c68bd3c`. |
+| Case 1 parent reviews | [`0x190a55c4752370be9e591a362413a3b79d7000e61ff9cb03e25d988e106f7d84`](https://explorer-studio.genlayer.com/tx/0x190a55c4752370be9e591a362413a3b79d7000e61ff9cb03e25d988e106f7d84); [`0x001e3b9df65a520786439c3de7e5c9fa5431fbea9158f18420a74a9b4fe276aa`](https://explorer-studio.genlayer.com/tx/0x001e3b9df65a520786439c3de7e5c9fa5431fbea9158f18420a74a9b4fe276aa) | Both FINALIZED / SUCCESS, PRESERVED. |
+| Case 1 child reviews | [`0x1cd2d122172aa867c2d71f093a5b31df74fefe8458072539c7187f768ba9d75a`](https://explorer-studio.genlayer.com/tx/0x1cd2d122172aa867c2d71f093a5b31df74fefe8458072539c7187f768ba9d75a); [`0x8392922a91ffcca5ed007b4345a4bbd4e6609b97b5d5fc6ab5c97e6080971428`](https://explorer-studio.genlayer.com/tx/0x8392922a91ffcca5ed007b4345a4bbd4e6609b97b5d5fc6ab5c97e6080971428) | Both FINALIZED / SUCCESS, GROUNDED. |
+| Case 1 assignee consent | [`0x34de65ac82fb62622f96f35050ea60d81762f2e8a15e8413325b38ec60bfa5e5`](https://explorer-studio.genlayer.com/tx/0x34de65ac82fb62622f96f35050ea60d81762f2e8a15e8413325b38ec60bfa5e5) | FINALIZED / SUCCESS. |
+| Case 1 finalization | [`0x056b3c35e57ccbe948643e045febee9c5e94ad7f94207b24da8578b7961121ee`](https://explorer-studio.genlayer.com/tx/0x056b3c35e57ccbe948643e045febee9c5e94ad7f94207b24da8578b7961121ee) | FINALIZED / SUCCESS; five AGREE. Certificate status 2; final hash `d80369388ed1708bffab2afb1800c98e300dcae5c678ceae7df2718e07dd6714`. |
+| Case 2 reordered/relabelled proposal | [`0xe6ae1aae958cc94ae654a1e28c3210501eb62e1c16ece41b68eaf682540dbd54`](https://explorer-studio.genlayer.com/tx/0xe6ae1aae958cc94ae654a1e28c3210501eb62e1c16ece41b68eaf682540dbd54) | FINALIZED / SUCCESS; same exact source kinds/texts in reverse order and with renamed IDs. Root matches case 1; exact case source hash `6554440453c200ce5b7969c881eaf8aa95c1a025d416e83944ecb24ba17b58a7` differs. |
+| Case 2 parent reviews | [`0xd69ab46155d9361f46d9d8469ac59e34391ce659c8cedd4ee234db1d6fe3a98a`](https://explorer-studio.genlayer.com/tx/0xd69ab46155d9361f46d9d8469ac59e34391ce659c8cedd4ee234db1d6fe3a98a); [`0xbff619289c2aa95dac90610313bbae2de05002c2f5a42992f58d5539cc412d25`](https://explorer-studio.genlayer.com/tx/0xbff619289c2aa95dac90610313bbae2de05002c2f5a42992f58d5539cc412d25) | Both FINALIZED / SUCCESS. |
+| Case 2 child reviews | [`0xdae51c75e1e530c604bf8dc4802e650954dd1d0e0f8430c99b91a7c7ef08fa22`](https://explorer-studio.genlayer.com/tx/0xdae51c75e1e530c604bf8dc4802e650954dd1d0e0f8430c99b91a7c7ef08fa22); [`0xcd8e37e9e103c5c4b74e3fe8d4d8ed498548805044af6829689b5d2ec062ec21`](https://explorer-studio.genlayer.com/tx/0xcd8e37e9e103c5c4b74e3fe8d4d8ed498548805044af6829689b5d2ec062ec21) | Both FINALIZED / SUCCESS. |
+| Case 2 assignee consent | [`0x099ade90e5decff4a099cc46a5ba7d7e9074cb3ebcd570e378b20a62046067f3`](https://explorer-studio.genlayer.com/tx/0x099ade90e5decff4a099cc46a5ba7d7e9074cb3ebcd570e378b20a62046067f3) | FINALIZED / SUCCESS. |
+| Case 2 replay finalization | [`0x999bfa9c3749ba2b5d36d3efd0ccf8eb46b2bd109bc38f765dfe1d3709fec4ef`](https://explorer-studio.genlayer.com/tx/0x999bfa9c3749ba2b5d36d3efd0ccf8eb46b2bd109bc38f765dfe1d3709fec4ef) | FINALIZED / ERROR; certificate read after failure remained status 1 / OPEN with empty final hash. The same root was already consumed by case 1. |
+
+## Superseded deployments and historical proof
+
+- Previous main `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66` and earlier `0x59B81DC93C24339030A6e10f10eD35d81aa274F1` used pre-canonicalization source SHA-256 `470bcdbb1c66f6e8ca109aab1ae3f5b1d74ee2edc55a682d7eaa92927d8b1e09`. They are not the corrected deployment.
+- Intermediate canonical-root V1 deployment `0x7f65e0dB391975dfdA93713eB7756F24bC8e2276`, tx `0x2cfc630f0f4c51a4e731e840217e95f5ec4406fd012bfcad8bd835a471e2c31e`, source SHA-256 `0b1ba39e71c1786b0036373e80914a52eb2b0f2eddb5e35a85e907022892079a`, had a separately deployed source hash before the `CONSERVE_SOURCE_V2` domain tag was applied; it is superseded by the V2 address above.
+- The older transaction table below is historical evidence against pre-canonicalization main `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`; it must not be cited as replay evidence for the corrected source.
+- Historical optional consumer `0x98cC7Cb84A63814cb6B3f61A6a2301Adad19894d` (deploy tx `0xf294030ca40d506e614d6ea7cd2af25adfeb34e0f18af9526f976ad6e7b7879d`) was configured to call that same previous main `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66`, case 1 and its historical final hash. It was not configured to call corrected V2 main.
+
+## Historical transaction evidence on superseded main
+### Historical transaction table
 
 All transaction hashes below were queried from the configured stable RPC. Application writes reached `FINALIZED`; `SUCCESS` means the leader execution succeeded, and `ERROR` is an expected reject only where stated. Validator maps are in the corresponding transaction records; they generally show agreeing votes with some idle validators.
 
 | Probe | Transaction(s) | Finalized outcome |
 |---|---|---|
-| Current main deployment | `0xa9cb64cd055eefc4b8dae5a34ea4b3e0add2857a4944270a00b9fc5b9d819553` | SUCCESS; contract `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66` |
+| Previous pre-canonicalization main deployment | `0xa9cb64cd055eefc4b8dae5a34ea4b3e0add2857a4944270a00b9fc5b9d819553` | SUCCESS; contract `0x15eCD4d06379D81A6133Af66a4424CDeAE3dfa66` |
 | Case 1 proposal / parent / child | `0xbcc3692a97defe332c6080860e1ea67bd19ef14ac9e0c9dd7b9e077f4cc14bde`; `0x6985ea913172ba8f231f7fe42323387826860012f47ccfa2f7b2bd192e976120`; `0xf260cb7129d83cdb9614d991108a022dd7cf3e4a90eaa3270ab735bdfe8a28f0` | All SUCCESS; parent `PRESERVED`, child `GROUNDED` |
 | Case 1 wrong signer / wrong source hash | `0xbebb84adeef91af49b974cffb923279b83ac04f1869506ecf65a29cb8a0c7435`; `0xccc26c5517ac9e898e7212e574efe0f23878ee4ed6b79d5bfa4d2ea6ba31fc98` | Both ERROR; neither assented |
 | Case 1 exact assent / finalization | `0x11b01b7c839b9982c46a4eb1797f43a5b7f399c22fa55c7843208b52fa6f8221`; `0x87409790f39ee86c30885e737f72a6f8889e139bd893094cb74747c619bf7e9c` | Both SUCCESS; certificate status 2, final hash `d5a190b4fa066ec59aee69aae3a0f7e31992e3ef1f546391ca53178efc7c4531` |

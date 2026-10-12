@@ -107,6 +107,49 @@ def test_direct_vm_enforces_withdrawable_consent_expiry_and_root_replay(
     assert case.is_conserved_for(case_id, final_hash)
 
 
+def test_direct_vm_rejects_reordered_and_renamed_source_root_replay(
+        direct_vm, direct_deploy, direct_alice, direct_bob):
+    warp(direct_vm, "2026-10-12T00:00:00Z")
+    case = direct_deploy(str(ROOT / "contracts" / "conserve.py"), sdk_version="v0.2.12")
+    expiry = int(datetime(2026, 10, 13, tzinfo=timezone.utc).timestamp())
+    source_a = {"id": "p1", "kind": "DUTY", "text": "The supplier must deliver five signed reports."}
+    source_b = {"id": "p2", "kind": "RIGHT", "text": "The customer may inspect the delivered reports."}
+    child = {"id": "c1", "kind": "DUTY", "text": "The replacement supplier must deliver five signed reports.",
+             "assignee": "0x" + direct_bob.hex()}
+    proposals = [
+        [source_a, source_b],
+        [{**source_b, "id": "renamed-b"}, {**source_a, "id": "renamed-a"}],
+    ]
+    case_ids = []
+    for sources in proposals:
+        direct_vm.sender = direct_alice
+        cid = case.propose("Service duties", "Preserve duties and rights", json.dumps(sources),
+                           json.dumps([child]), expiry)
+        case_ids.append(cid)
+    first, replay = case_ids
+    assert case.get_case(first)["root_hash"] == case.get_case(replay)["root_hash"]
+    assert case.get_case(first)["source_hash"] != case.get_case(replay)["source_hash"]
+    duplicate = case.propose("Service duties", "Preserve repeated duty",
+                             json.dumps([source_a, {**source_a, "id": "p3"}]),
+                             json.dumps([child]), expiry)
+    assert case.get_case(duplicate)["root_hash"] != case.get_case(first)["root_hash"]
+    for cid in case_ids:
+        direct_vm.sender = direct_alice
+        for index in range(2):
+            direct_vm.mock_llm(r"PARENT CONSERVATION", json.dumps(GOOD_PARENT))
+            case.review_parent(cid, index)
+        direct_vm.mock_llm(r"CHILD AUTHORIZATION", json.dumps(GOOD_CHILD))
+        case.review_child(cid, 0)
+        direct_vm.sender = direct_bob
+        case.accept_assignment(cid, case.get_case(cid)["source_hash"])
+    direct_vm.sender = direct_alice
+    assert case.finalize(first, case.get_case(first)["source_hash"])
+    with direct_vm.expect_revert("declared source set already consumed"):
+        case.finalize(replay, case.get_case(replay)["source_hash"])
+    assert case.get_case(replay)["status"] == 1
+    assert case.get_case(replay)["final_hash"] == ""
+
+
 def test_direct_vm_rejects_expired_case_and_malformed_proposal(
         direct_vm, direct_deploy, direct_alice, direct_bob):
     warp(direct_vm, "2026-10-12T00:00:00Z")
